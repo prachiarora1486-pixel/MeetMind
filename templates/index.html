@@ -1,0 +1,97 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+    <head> 
+        <meta charset="UTF-8">
+         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <title>Meeting Prep Agent</title>
+     <style> 
+     *{ margin:0; 
+        padding:0;
+        box-sizing:border-box;
+        font-family:Segoe UI, sans-serif; 
+        } 
+        body{ 
+            background:#0f172a; 
+            color:white; 
+            min-height:100vh; 
+            display:flex; 
+            justify-content:center; 
+            align-items:center; 
+            padding:30px; 
+            } 
+            .container{ 
+                width:100%; 
+                max-width:900px; 
+                } 
+                h1{ 
+                    text-align:center; 
+                    margin-bottom:25px; 
+                    color:#38bdf8; 
+                    } 
+                    .card{ 
+                        background:#1e293b; 
+                        padding:20px; 
+                        border-radius:15px; 
+                        margin-bottom:20px; 
+                        box-shadow:0 4px 15px rgba(0,0,0,0.3);
+                        } 
+                        label{ 
+                            display:block; 
+                            margin-bottom:8px; 
+                            font-weight:600; 
+                            } 
+                            input, textarea{ 
+                                width:100%; 
+                                padding:12px; 
+                                border:none; 
+                                border-radius:10px; 
+                                background:#334155; 
+                                color:white; 
+                                margin-bottom:15px; 
+                                } 
+                                input:focus, textarea:focus{ 
+                                    outline:none; 
+                                    border:2px solid #38bdf8; 
+                                    } 
+                                    button{ 
+                                        border:none; 
+                                        padding:12px 18px; 
+                                        border-radius:10px; 
+                                        cursor:pointer; 
+                                        font-size:15px; 
+                                        font-weight:600; 
+                                        } 
+                                        .primary-btn{ 
+                                            background:#2563eb; 
+                                            color:white; 
+                                            } 
+                                        .primary-btn:hover{
+                                             background:#1d4ed8; 
+                                             } 
+                                        .secondary-btn{ 
+                                            background:#10b981; 
+                                            color:white; 
+                                            } 
+                                        .secondary-btn:hover{ 
+                                            background:#059669; 
+                                            } 
+                                        .output{ 
+                                            background:#0f172a; 
+                                            padding:15px; 
+                                            border-radius:10px; 
+                                            min-height:180px; 
+                                            white-space:pre-wrap; 
+                                            line-height:1.6; 
+                                            } 
+                                            .status{ 
+                                                margin-top:10px; 
+                                                color:#22c55e; 
+                                                font-weight:bold; 
+                                                } 
+                                            .loading{ 
+                                                color:#facc15; 
+                                                } 
+                                            </style> 
+                                            </head> 
+                                            <body> 
+                                                <div class="container"> <h1>🤖 Meeting Prep Agent</h1> <!-- Generate Briefing --> <div class="card"> <label>Contact Name</label> <input type="text" id="contact" placeholder="Enter contact name..." > <button class="primary-btn" onclick="generateBriefing()" > Generate Briefing </button> </div> <!-- AI Briefing --> <div class="card"> <h2>AI Meeting Briefing</h2> <br> <div id="briefing" class="output"> Your briefing will appear here... </div> </div> <!-- Save Notes --> <div class="card"> <h2>Save Meeting Notes</h2> <br> <textarea id="notes" rows="5" placeholder="Enter meeting notes..." ></textarea> <button class="secondary-btn" onclick="saveNotes()" > Save Notes </button> <div id="status" class="status"></div> </div> </div> <script> async function generateBriefing(){ const contact = document.getElementById("contact").value.trim(); const briefingBox = document.getElementById("briefing"); if(!contact){ alert("Please enter a contact name"); return; } briefingBox.innerHTML = '<span class="loading">Generating briefing...</span>'; try{ const response = await fetch("/get_briefing",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ contact:contact }) }); const data = await response.json(); if(response.ok){ briefingBox.textContent = data.briefing; } else{ briefingBox.textContent = data.error; } }catch(error){ briefingBox.textContent = "Server connection failed."; } } async function saveNotes(){ const contact = document.getElementById("contact").value.trim(); const notes = document.getElementById("notes").value.trim(); const status = document.getElementById("status"); if(!contact || !notes){ alert("Please fill all fields"); return; } try{ const response = await fetch("/save_notes",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ contact:contact, notes:notes }) }); const data = await response.json(); if(response.ok){ status.textContent = data.status; document.getElementById("notes").value = ""; }else{ status.textContent = data.error; } }catch(error){ status.textContent = "Failed to connect to server."; } } </script> </body> </html>
